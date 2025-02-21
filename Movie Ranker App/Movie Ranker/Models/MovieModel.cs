@@ -8,6 +8,8 @@ namespace Movie_Ranker.Models
         public int Id { get; set; }
         public string MovieName { get; set; }
         public string Genre { get; set; }
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode =true)]
         public DateTime ReleaseDate { get; set; }
         public string Studio {  get; set; }
         public int Score { get; set; }

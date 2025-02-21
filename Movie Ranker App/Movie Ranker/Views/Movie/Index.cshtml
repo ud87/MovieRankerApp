@@ -2,4 +2,30 @@
 @{
     ViewData["Title"] = "Index"; // This is the title of the page
 }
+<br />
 <h1>Movies Index</h1>
+<br />
+<table class="table table-striped" style="width:100%">
+    <thead>
+        <tr>
+            <th>Movie Name</th>
+            <th>Genre</th>
+            <th>Release Date</th>
+            <th>Studio</th>
+            <th>Score</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model)
+        {
+            <tr>
+                <td>@obj.MovieName</td>
+                <td>@obj.Genre</td>
+                <td>@obj.ReleaseDate</td>
+                <td>@obj.Studio</td>
+                <td>@obj.Score</td>
+            </tr>
+        }
+    </tbody>
+
+</table>
