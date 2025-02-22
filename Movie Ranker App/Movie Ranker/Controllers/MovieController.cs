@@ -20,7 +20,8 @@ namespace Movie_Ranker.Controllers
         public IActionResult Index()
         {
             IEnumerable<MovieModel> objMovieList = _db.Movies.ToList(); //retrieves all the movies from the database and stores them in objMovieList
-            return View(objMovieList); //returns the view with the list of movies
+            var moviesByScoringOrder = objMovieList.OrderByDescending(m => m.Score).ToList(); //using LINQ we are ording the list in descending order as per score
+            return View(moviesByScoringOrder); //returns the view with the list of movies
         }
 
         //get method to create a new movie
@@ -59,7 +60,7 @@ namespace Movie_Ranker.Controllers
                     return NotFound();
                 }
                 return View(movie);
-            }          
+            }
         }
 
         //post method to edit existing movie
@@ -74,6 +75,38 @@ namespace Movie_Ranker.Controllers
                 return RedirectToAction("Index");  //redirects to the Index action
             }
             return View(movie); //returns the view with the movie model
+        }
+
+        //get method to delete a movie
+        public IActionResult Delete(int id)
+        {
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }
+            else
+            {
+                var movie = _db.Movies.Find(id); //finds the movie with the id passed in the parameter
+                if (movie == null)
+                {
+                    return NotFound();
+                }
+                return View(movie);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken] // used to validate anti forgery
+        public IActionResult DeletePost(int id)
+        {
+            var movie = _db.Movies.Find(id); //finds the movie with the id passed in the parameter
+            if (movie == null)
+            {
+                return NotFound();
+            }
+            _db.Movies.Remove(movie); //removes the movie from the database
+            _db.SaveChanges(); //saves the changes to the database
+            return RedirectToAction("Index"); //redirects to the Index action
         }
     }
 }
