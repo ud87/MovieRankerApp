@@ -1,0 +1,51 @@
+﻿@*
+If toastr not used then used below
+@if(TempData["success"] != null)
+{
+    <h2>@TempData["success"]</h2>
+}
+*@
+
+<style>
+	#toast-container {
+		z-index: 99999 !important;
+	}
+
+	/* Style for Success Messages */
+	.toast-success {
+		background-color: #28a745 !important;
+		color: white !important;
+		font-weight: bold;
+	}
+
+	/* Style for Error Messages */
+	.toast-error {
+		background-color: #dc3545 !important;
+		color: white !important;
+		font-weight: bold;
+	}
+</style>
+
+@if (TempData["success"] != null)
+{
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+	<script type="text/javascript">
+		toastr.options = {
+			"positionClass": "toast-top-center"
+		};
+		toastr.success('@TempData["success"]')
+	</script>
+}
+@if (TempData["error"] != null)
+{
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+	<script type="text/javascript">
+		toastr.options = {
+			"positionClass": "toast-top-center"
+		};
+		toastr.error('@TempData["error"]')
+	</script>
+}
+

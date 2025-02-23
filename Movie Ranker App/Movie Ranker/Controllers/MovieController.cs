@@ -33,6 +33,11 @@ namespace Movie_Ranker.Controllers
                 //convert the filtered movies to list
                 IEnumerable<MovieModel> objFilteredMovieList = movies.ToList();
 
+                if (!objFilteredMovieList.Any())
+                {
+                    TempData["error"] = "No categories found. Press search again to go back";
+                }
+
                 //pass it to the view
                 return View(objFilteredMovieList);
             }
@@ -59,6 +64,9 @@ namespace Movie_Ranker.Controllers
             {
                 _db.Movies.Add(movie); //adds the movie to the database
                 _db.SaveChanges(); //saves the changes to the database
+
+                @TempData["success"] = "Movie created successfully"; //stores a message in the TempData dictionary
+
                 return RedirectToAction("Index"); //redirects to the Index action
             }
             return View(movie); //returns the view with the movie model
@@ -92,6 +100,9 @@ namespace Movie_Ranker.Controllers
             {
                 _db.Movies.Update(movie); //updates the movie in the database
                 _db.SaveChanges(); //saves the changes to the database
+
+                TempData["success"] = "Movie has been edited successfully";
+
                 return RedirectToAction("Index");  //redirects to the Index action
             }
             return View(movie); //returns the view with the movie model
@@ -126,6 +137,8 @@ namespace Movie_Ranker.Controllers
             }
             _db.Movies.Remove(movie); //removes the movie from the database
             _db.SaveChanges(); //saves the changes to the database
+
+            TempData["success"] = "Movie has been deleted successfully";
             return RedirectToAction("Index"); //redirects to the Index action
         }
     }
