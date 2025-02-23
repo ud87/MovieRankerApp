@@ -17,12 +17,32 @@ namespace Movie_Ranker.Controllers
             _db = db;   //assigns the injeced db instance to the private field _db so it can be used through out the controller
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string searchString = "") //search string is optional here
         {
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                //trim the search string to remove leading or trailing spaces
+                searchString = searchString.Trim();
+
+                //get all movies from the db
+                var movies = from m in _db.Movies select m;
+
+                //filter categories if a search term is provided
+                movies = movies.Where(m => m.MovieName.ToLower().Contains(searchString.ToLower()));
+
+                //convert the filtered movies to list
+                IEnumerable<MovieModel> objFilteredMovieList = movies.ToList();
+
+                //pass it to the view
+                return View(objFilteredMovieList);
+            }
+
             IEnumerable<MovieModel> objMovieList = _db.Movies.ToList(); //retrieves all the movies from the database and stores them in objMovieList
             var moviesByScoringOrder = objMovieList.OrderByDescending(m => m.Score).ToList(); //using LINQ we are ording the list in descending order as per score
             return View(moviesByScoringOrder); //returns the view with the list of movies
         }
+
+
 
         //get method to create a new movie
         public IActionResult Create()
