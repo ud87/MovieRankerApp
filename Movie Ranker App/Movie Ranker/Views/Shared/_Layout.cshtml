@@ -15,7 +15,7 @@
         <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
             <div class="container-fluid">
                 
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Movie_Ranker</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Movie Ranker</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -45,8 +45,8 @@
                             </div>
                         </li>*@
                     </ul>
-                    <form class="d-flex" method="get" asp-controller="Movie" asp-action="Index">
-                        <input class="form-control me-sm-2" type="search" name="searchString" placeholder="Search">
+                    <form class="d-flex gap-2" method="get" asp-controller="Movie" asp-action="Index">
+                        <input class="form-control me-sm-2 rounded" type="search" name="searchString" placeholder="Search">
                         <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
                     </form>
                 </div>
@@ -61,7 +61,7 @@
     </div>
 
     <footer class="border-top footer text-muted">
-        <div class="container">
+        <div class="container text-center">
             &copy; 2025 - Movie_Ranker - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
