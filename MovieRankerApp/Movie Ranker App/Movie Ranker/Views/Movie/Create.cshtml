@@ -1,0 +1,43 @@
+﻿@model MovieModel // This is the model that is passed to the view
+@{
+    ViewData["Title"] = "Create"; // This is the title of the page
+}
+<form method="post" asp-action="Create">
+    <div class="border p-3 mt-4">
+        <div>
+            <h2>Create a new Movie</h2>
+        </div>
+        <div asp-validation-summary="All"></div> @*asp validation summary is a tag helpeer that enables the display of validation error messages. 
+    All indicates all validation errors model level and property level *@
+        <div class="mb-3">
+            <label asp-for="MovieName"> </label>
+            <input asp-for="MovieName" class="form-control" />
+            <span asp-validation-for="MovieName" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Genre"> </label>
+            <input asp-for="Genre" class="form-control" />
+            <span asp-validation-for="Genre" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="ReleaseDate"></label>
+            <input asp-for="ReleaseDate" class="form-control" />
+            <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Studio"></label>
+            <input asp-for="Studio" class="form-control" />
+            <span asp-validation-for="Studio" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Score"></label>
+            <input asp-for="Score" class="form-control" placeholder="Enter between 0 and 100" />
+            <span asp-validation-for="Score" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 150px">Update</button>
+        <a asp-controller="Movie" asp-action="Index" class="btn btn-secondary style="width:150px">
+            Back to List
+        </a>
+    </div>
+</form>
+

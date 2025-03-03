@@ -1,0 +1,45 @@
+﻿<partial name ="_Notification"/>
+@model IEnumerable<MovieModel> // This is the model that is passed to the view
+@{
+    ViewData["Title"] = "Index"; // This is the title of the page
+}
+<br />
+<h1>Movies Index</h1>
+<br />
+
+<a class="btn btn-primary mb-3" asp-controller="Movie" asp-action="Create">Create new Movie</a> @*asp-action specifies that clicking the button will navigate to the Create action method in the movie controller*@
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Movie Name</th>
+                <th>Genre</th>
+                <th>Release Date</th>
+                <th>Studio</th>
+                <th>Score</th>
+                <th>Controls</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var obj in Model)
+            {
+                <tr>
+                    <td>@obj.MovieName</td>
+                    <td>@obj.Genre</td>
+                    <td>@obj.ReleaseDate.ToString("dd/MM/yyyy")</td>
+                    <td>@obj.Studio</td>
+                    <td>@obj.Score</td>
+                    <td>
+                        <div class="w-55 btn-group" role="group">
+                            <a asp-controller="Movie" asp-action="Edit" asp-route-id="@obj.Id"
+                               class="btn btn-primary mx-1 rounded"><i class="bi bi-pencil-square"> </i></a>
+                            <a asp-controller="Movie" asp-action="Delete" asp-route-id="@obj.Id"
+                               class="btn btn-danger mx-1 rounded"><i class="bi bi-trash"></i></a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+</div>

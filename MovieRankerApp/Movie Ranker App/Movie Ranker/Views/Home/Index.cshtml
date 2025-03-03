@@ -1,0 +1,19 @@
+﻿@{
+    ViewData["Title"] = "Movie Ranker - Home";
+}
+
+<div class="container text-center mt-4">
+    <h1 class="display-4" style="font: 24px; color:darkorange; font-weight:900;">Welcome to Movie Ranker</h1>
+    <p class="lead">Create your personal movie list, rate your favorites, and see the top-ranked movies at a glance!</p>
+
+    <div class="mt-4">
+        <a asp-controller="Movie" asp-action="Create" class="btn btn-primary btn-lg mb-3">Get Started</a>
+        <a asp-controller="Movie" asp-action="Index" class="btn btn-outline-secondary btn-lg mb-3">View Movie Rankings</a>
+    </div>
+
+    <div class="container my-4">
+        <img src="https://cdn.pixabay.com/photo/2016/03/31/18/36/cinema-1294496_1280.png" class="img-fluid rounded shadow" alt="Cinema Image">
+    </div>
+  
+</div>
+
