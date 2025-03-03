@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
 # Copy project files and restore dependencies
-COPY ["Movie Ranker App/Movie Ranker/Movie Ranker.csproj", "./"]
+COPY ["MovieRankerApp/Movie Ranker App/Movie Ranker/Movie Ranker.csproj", "./"]
 RUN dotnet restore "Movie Ranker.csproj"
 
 # Copy remaining files and build the app
