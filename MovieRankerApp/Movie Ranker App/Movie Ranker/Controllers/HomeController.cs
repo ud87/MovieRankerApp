@@ -26,7 +26,7 @@ namespace Movie_Ranker.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier }); //added "Error" to new ErrorViewModel this tells ASP.NET Core to look for a view named Error in the Views/Shared folder
         }
     }
 }
