@@ -19,4 +19,4 @@ COPY --from=build /app/out .
 EXPOSE 8080
 
 # Start the application
-CMD ["dotnet", "MovieRankerApp.dll"]
+CMD ["dotnet", "Movie Ranker.dll"]
