@@ -20,12 +20,15 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles(); //added to serve static files like images, css, and js
 app.UseRouting();
 
 app.UseAuthorization();
 
 // Remove the line causing the error
 // app.MapStaticAssets();
+
+
 
 app.MapControllerRoute(
     name: "default",
