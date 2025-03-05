@@ -5,8 +5,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL"); //environment set in Render with formatted string
+
+if ( string.IsNullOrEmpty(connectionString))
+{
+    throw new InvalidOperationException("DATABASE_URL environment variable is not set.");
+}
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DATABASE_URL"))
+    options.UseNpgsql(connectionString)
 );
 
 var app = builder.Build();
