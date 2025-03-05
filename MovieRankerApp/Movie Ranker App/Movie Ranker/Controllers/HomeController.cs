@@ -15,7 +15,7 @@ namespace Movie_Ranker.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return View("~/Views/Home/Index.cshtml");
         }
 
         public IActionResult Privacy()
