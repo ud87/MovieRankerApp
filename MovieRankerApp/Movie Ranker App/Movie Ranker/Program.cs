@@ -11,13 +11,13 @@ builder.Services.AddControllersWithViews()
         options.ViewLocationFormats.Clear(); // Clear default paths to avoid conflicts
 
         // Specify the location for Home views (Index.cshtml)
-        options.ViewLocationFormats.Add("/Movie Ranker App/Movie Ranker/Views/Home/{0}.cshtml");
+        options.ViewLocationFormats.Add(@"/Movie%20Ranker%20App/Movie%20Ranker/Views/Home/{0}.cshtml");
 
         // Specify the location for Movie views (Create, Delete, Edit, Index.cshtml)
-        options.ViewLocationFormats.Add("/Movie Ranker App/Movie Ranker/Views/Movie/{0}.cshtml");
+        options.ViewLocationFormats.Add(@"/Movie%20Ranker%20App/Movie%20Ranker/Views/Movie/{0}.cshtml");
 
         // Specify the location for Shared views (_Layout.cshtml, etc.)
-        options.ViewLocationFormats.Add("/Movie Ranker App/Movie Ranker/Views/Shared/{0}.cshtml");
+        options.ViewLocationFormats.Add(@"/Movie%20Ranker%20App/Movie%20Ranker/Views/Shared/{0}.cshtml");
     });
 
 var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL"); //environment set in Render with formatted string
