@@ -3,22 +3,23 @@ using Movie_Ranker.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Set the content root directory to match your Render.com folder structure
+builder.Host.UseContentRoot("/app/MovieRankerApp/Movie Ranker App/Movie Ranker");
+
+// Add MVC services and configure Razor view locations
 builder.Services.AddControllersWithViews()
     .AddRazorOptions(options =>
     {
-        // Add paths for custom view locations
-        options.ViewLocationFormats.Clear(); // Clear default paths to avoid conflicts
+        // DO NOT REMOVE DEFAULT PATHS
+        options.ViewLocationFormats.Add("/Views/{1}/{0}.cshtml");
+        options.ViewLocationFormats.Add("/Views/Shared/{0}.cshtml");
 
-        // Specify the location for Home views (Index.cshtml)
-        options.ViewLocationFormats.Add(@"/Movie%20Ranker%20App/Movie%20Ranker/Views/Home/{0}.cshtml");
-
-        // Specify the location for Movie views (Create, Delete, Edit, Index.cshtml)
-        options.ViewLocationFormats.Add(@"/Movie%20Ranker%20App/Movie%20Ranker/Views/Movie/{0}.cshtml");
-
-        // Specify the location for Shared views (_Layout.cshtml, etc.)
-        options.ViewLocationFormats.Add(@"/Movie%20Ranker%20App/Movie%20Ranker/Views/Shared/{0}.cshtml");
+        // Add your custom view locations
+        options.ViewLocationFormats.Add("/app/MovieRankerApp/Movie Ranker App/Movie Ranker/Views/Home/{0}.cshtml");
+        options.ViewLocationFormats.Add("/app/MovieRankerApp/Movie Ranker App/Movie Ranker/Views/Movie/{0}.cshtml");
+        options.ViewLocationFormats.Add("/app/MovieRankerApp/Movie Ranker App/Movie Ranker/Views/Shared/{0}.cshtml");
     });
+
 
 var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL"); //environment set in Render with formatted string
 
