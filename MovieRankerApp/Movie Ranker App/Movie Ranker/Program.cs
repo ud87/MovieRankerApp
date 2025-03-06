@@ -3,7 +3,7 @@ using Movie_Ranker.Data;
 
 var options = new WebApplicationOptions
 {
-    ContentRootPath = "/app/MovieRankerApp/Movie Ranker App/Movie Ranker"
+    ContentRootPath = "/app/MovieRankerApp/MovieRankerApp/Movie Ranker App/Movie Ranker"
 };
 
 var builder = WebApplication.CreateBuilder(options); // Pass the options here
