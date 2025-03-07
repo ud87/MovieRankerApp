@@ -8,7 +8,7 @@ RUN dotnet restore "MovieRanker.csproj"
 
 # Copy the entire project directory and build the app
 COPY ["MovieRankerApp/Movie Ranker App/Movie Ranker/", "./"]
-RUN dotnet publish -c Release -o out
+RUN dotnet publish "MovieRanker.csproj" -c Release -o out
 
 # Use a smaller runtime image for deployment
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
