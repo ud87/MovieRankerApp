@@ -22,7 +22,7 @@ var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
 
 if (string.IsNullOrEmpty(connectionString))
 {
-    throw new InvalidOperationException("DATABASE_URL environment variable is not set.");
+    connectionString = builder.Configuration.GetConnectionString("DefaultConnection"); //for local development
 }
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
