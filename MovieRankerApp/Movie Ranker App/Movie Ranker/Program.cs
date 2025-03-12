@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Movie_Ranker.Data;
 
 var builder = WebApplication.CreateBuilder(); // Pass the options here
@@ -17,6 +19,11 @@ builder.Services.AddControllersWithViews()
         options.ViewLocationFormats.Add("/Views/Shared/{0}.cshtml");
 
     });
+
+//Add identity service to the application
+builder.Services.AddIdentity<IdentityUser, IdentityRole>() //IdentityUser and IdentityRole is the default user class in ASP.NET Core Identity
+    .AddEntityFrameworkStores<ApplicationDbContext>();      //configures Identity to use Entity Framework Core for storing user data
+
 
 var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
 
@@ -38,6 +45,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseAuthentication(); //Add authentication service to the application
 app.UseRouting();
 app.UseAuthorization();
 

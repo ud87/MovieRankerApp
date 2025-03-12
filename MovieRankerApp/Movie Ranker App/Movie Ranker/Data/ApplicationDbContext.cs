@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Movie_Ranker.Models; //this is Object Relational Mapper (ORM) used to interact with database in EF
 
 namespace Movie_Ranker.Data
 {
-    public class ApplicationDbContext : DbContext //DbContext is a class in EF Core that represents a session with the database and allows us to query and save instances of our entities
+    public class ApplicationDbContext : IdentityDbContext //IdentityDbContext is used to manage users and roles in the database
     {
         //ApplicationDbContext is a constructor that takes DbContextOptions as a parameter, this ensures that dbContext is configured correctly
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
