@@ -62,5 +62,24 @@ namespace Movie_Ranker.Controllers
         {
             return View();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false); //lockoutonFailure: users wont be locked out after failed attempts
+
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("Index", "Movie");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid Login Attempt");
+                }
+            }
+            return View(model);
+        }
     }
 }
