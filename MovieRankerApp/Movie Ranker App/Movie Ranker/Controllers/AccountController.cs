@@ -55,5 +55,12 @@ namespace Movie_Ranker.Controllers
             }
             return View(model);
         }
+
+        //Show login form
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
     }
 }
