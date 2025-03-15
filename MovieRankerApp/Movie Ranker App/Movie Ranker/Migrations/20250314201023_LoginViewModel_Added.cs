@@ -10,7 +10,7 @@ namespace Movie_Ranker.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-
+ 
         }
 
         /// <inheritdoc />
