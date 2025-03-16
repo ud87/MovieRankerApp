@@ -22,8 +22,8 @@ builder.Services.AddControllersWithViews()
 
 //Add identity service to the application
 builder.Services.AddIdentity<IdentityUser, IdentityRole>() //IdentityUser and IdentityRole is the default user class in ASP.NET Core Identity
-    .AddEntityFrameworkStores<ApplicationDbContext>();      //configures Identity to use Entity Framework Core for storing user data
-
+    .AddEntityFrameworkStores<ApplicationDbContext>()      //configures Identity to use Entity Framework Core for storing user data
+    .AddDefaultTokenProviders(); //adds token providers to generate tokens for password reset, email confirmation etc
 
 var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
 
