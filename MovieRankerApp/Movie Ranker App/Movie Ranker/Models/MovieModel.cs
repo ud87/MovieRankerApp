@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema; //used for data annotations like key, required etc 
 
@@ -29,5 +30,12 @@ namespace Movie_Ranker.Models
 
         [Range(0, 100, ErrorMessage ="Value must be between 0 and 100")]
         public int Score { get; set; }
+
+        [Required]
+        public string UserId { get; set; } //stores the user id of the user who created the movie
+
+        [ForeignKey("UserId")]  //foreign key to link to the user who created the movie
+        public virtual IdentityUser User { get; set; } //navigation property to the user who created the movie
+
     }
 }
