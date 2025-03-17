@@ -45,8 +45,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseAuthentication(); //Add authentication service to the application
 app.UseRouting();
+app.UseAuthentication(); //Add authentication service to the application
 app.UseAuthorization();
 
 app.MapControllerRoute(
