@@ -9,6 +9,8 @@
         </div>
         <div asp-validation-summary="All"></div> @*asp validation summary is a tag helpeer that enables the display of validation error messages. 
     All indicates all validation errors model level and property level *@
+        <input type="hidden" asp-for="Id"/> <!--Include Id as a hidden field-->
+        <input type="hidden" asp-for="UserId"/> <!--Include UserId as a hidden field-->
         <div class="mb-3">
             <label asp-for="MovieName"> </label>
             <input asp-for="MovieName" class="form-control" />
@@ -35,7 +37,7 @@
             <span asp-validation-for="Score" class="text-danger"></span>
         </div>
         <button type="submit" class="btn btn-primary" style="width: 150px">Update</button>
-        <a asp-controller="Movie" asp-action="Index" class="btn btn-secondary style="width:150px">
+        <a asp-controller="Movie" asp-action="Index" class="btn btn-secondary" style="width:150px">
             Back to List
         </a>
     </div>

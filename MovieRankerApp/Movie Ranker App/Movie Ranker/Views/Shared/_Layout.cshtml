@@ -51,7 +51,19 @@
                         <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
                         
                         <!--Navigation link (not inside the form, so it doesn't submit)-->
-                        <a class="btn btn-danger my-2 my-sm-0" asp-controller="Account" asp-action="Login">Login</a>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <a class="btn btn-warning my-2 my-sm-0" id="logoutButton">Logout</a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-danger my-2 my-sm-0" asp-controller="Account" asp-action="Login">Login</a>
+                        }
+                        
+                    </form>
+                    <!--Add a hidden form for he LogOut Pos request-->
+                    <form id="logoutForm" asp-controller="Account" asp-action="LogOut" method="post" style="display:none;">
+
                     </form>
              
                 </div>
@@ -84,6 +96,11 @@
                     link.classList.add("active");
                 }
             });
+        });
+
+        //submit the logoutForm triggering logOut post method
+        document.getElementById("logoutButton").addEventListener("click", function(){
+            document.getElementById("logoutForm").submit() //submit the hidden logout form
         });
     </script>
 
