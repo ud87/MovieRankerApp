@@ -4,7 +4,15 @@
     ViewData["Title"] = "Index"; // This is the title of the page
 }
 <br />
-<h1>Movies Index</h1>
+@if (User.Identity.IsAuthenticated)
+{
+    <h1>Your Movie List</h1>
+}
+else
+{
+    <h1>All Movie Index</h1>
+}
+
 <br />
 
 <a class="btn btn-primary mb-3" asp-controller="Movie" asp-action="Create">Create new Movie</a> @*asp-action specifies that clicking the button will navigate to the Create action method in the movie controller*@
