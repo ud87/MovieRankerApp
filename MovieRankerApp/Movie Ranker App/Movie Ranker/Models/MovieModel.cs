@@ -20,7 +20,7 @@ namespace Movie_Ranker.Models
         public string? Genre { get; set; }
 
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode =true)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode =true)]
         [Display(Name = "Release Date")]
         [Column(TypeName = "date")]     //Ensures Postgres stores the date in date format
         public DateTime ReleaseDate { get; set; }
@@ -28,14 +28,13 @@ namespace Movie_Ranker.Models
         [Column(TypeName = "text")]
         public string? Studio {  get; set; }
 
-        [Range(0, 100, ErrorMessage ="Value must be between 0 and 100")]
-        public int Score { get; set; }
+        [Range(0, 10, ErrorMessage ="Value must be between 0 and 10")]
+        public double Score { get; set; }
 
-        [Required]
-        public string UserId { get; set; } //stores the user id of the user who created the movie
+        public string? UserId { get; set; } //stores the user id of the user who created the movie
 
         [ForeignKey("UserId")]  //foreign key to link to the user who created the movie
-        public virtual IdentityUser User { get; set; } //navigation property to the user who created the movie
+        public virtual IdentityUser? User { get; set; } //navigation property to the user who created the movie
 
     }
 }
