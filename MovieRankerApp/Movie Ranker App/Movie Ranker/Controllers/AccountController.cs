@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Movie_Ranker.Models;
 
@@ -80,6 +81,14 @@ namespace Movie_Ranker.Controllers
                 }
             }
             return View(model);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<ActionResult> LogOut()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
         }
     }
 }

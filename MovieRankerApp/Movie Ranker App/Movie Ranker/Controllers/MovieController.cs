@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Movie_Ranker.Data;
 using Movie_Ranker.Models;
 
@@ -9,12 +11,14 @@ namespace Movie_Ranker.Controllers
         //private readonly ApplicationDbContext _db is a private field that holds a reference to the ApplicationDbContext
         //this is used to store the database context instance
         private readonly ApplicationDbContext _db;
+        private readonly UserManager<IdentityUser> _userManager;
 
         //MovieController is a constructor that takes ApplicationDbContext as a parameter and assigns it to the private field _db
         //constructior receives ApplicatioDbContext via Dependency Injection (DI)
-        public MovieController(ApplicationDbContext db)
+        public MovieController(ApplicationDbContext db, UserManager<IdentityUser> userManager)
         {
             _db = db;   //assigns the injeced db instance to the private field _db so it can be used through out the controller
+            _userManager = userManager; //Injecting UserManager to get the current user's ID
         }
 
         public IActionResult Index(string searchString = "") //search string is optional here
@@ -43,25 +47,56 @@ namespace Movie_Ranker.Controllers
             }
 
             IEnumerable<MovieModel> objMovieList = _db.Movies.ToList(); //retrieves all the movies from the database and stores them in objMovieList
-            var moviesByScoringOrder = objMovieList.OrderByDescending(m => m.Score).ToList(); //using LINQ we are ording the list in descending order as per score
-            return View(moviesByScoringOrder); //returns the view with the list of movies
+            
+            //If user is logged in 
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = _userManager.GetUserId(User);
+
+                //Filter movies by the logged-in user
+                var moviesByUser = objMovieList.Where(m => m.UserId == userId).ToList();
+                var moviesByScoringOrder = moviesByUser.OrderByDescending(m => m.Score).ToList();
+                return View(moviesByScoringOrder);
+            }
+            else
+            {
+                var moviesByScoringOrder = objMovieList.OrderByDescending(m => m.Score).ToList(); //using LINQ we are ording the list in descending order as per score
+                return View(moviesByScoringOrder); //returns the view with the list of movies
+            }
         }
 
 
 
         //get method to create a new movie
+        [Authorize]
         public IActionResult Create()
         {
             return View(); //there is no need to retrieve any data from the db as it is simply displaying an empty form for the user to fill out so its blank
         }
 
         //post method to create a new movie
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken] // used to validate anti forgery
-        public IActionResult Create(MovieModel movie)
+        public IActionResult Create(MovieModel movie) //Bind ensures only the specified props are bound from the form, prevents UserId from being validated during model binding
         {
             if (ModelState.IsValid) //checks if the model state is valid
             {
+                // Log the authentication state
+                var isAuthenticated = User.Identity.IsAuthenticated;
+                Console.WriteLine($"Is Authenticated: {isAuthenticated}");
+
+                //Get the current logged-in user's ID
+                var userId = _userManager.GetUserId(User);
+
+                if (userId == null)
+                {
+                    return RedirectToAction("Login", "Account"); //redirect to login if user is not logged in
+                }
+
+                //Assign the UserId to the movie being created
+                movie.UserId = userId;
+
                 _db.Movies.Add(movie); //adds the movie to the database
                 _db.SaveChanges(); //saves the changes to the database
 
@@ -70,6 +105,7 @@ namespace Movie_Ranker.Controllers
                 return RedirectToAction("Index"); //redirects to the Index action
             }
             //ensure the model passed back contains all properties
+        
             return View(new MovieModel
             {
                 MovieName = movie.MovieName,
@@ -82,28 +118,52 @@ namespace Movie_Ranker.Controllers
 
 
         //get method to edit existing movie
+        [Authorize]
         public IActionResult Edit(int id)
         {
             if (id == null || id == 0)
             {
                 return NotFound();
             }
-            else
+            
+            var movie = _db.Movies.Find(id); //finds the movie with the id passed in the parameter
+            if (movie == null)
             {
-                var movie = _db.Movies.Find(id); //finds the movie with the id passed in the parameter
-                if (movie == null)
-                {
-                    return NotFound();
-                }
-                return View(movie);
+                return NotFound();
             }
+
+            //check if current user is the owner of the movie
+            var userId = _userManager.GetUserId(User);
+            if (movie.UserId != userId)
+            {
+                TempData["error"] = "You are not authorized to edit this movie.";
+                return RedirectToAction("Index");
+            }
+            return View(movie);
         }
 
         //post method to edit existing movie
         [HttpPost]
         [ValidateAntiForgeryToken] // used to validate anti forgery
-        public IActionResult Edit(MovieModel movie)
+        public IActionResult Edit(int id, [Bind("Id,MovieName,Genre,ReleaseDate,Studio,Score,UserId")] MovieModel movie)
         {
+
+            if (id != movie.Id)
+            {
+                return NotFound();
+            }
+
+            //Check if the current user is the owner of the movie
+            var userId = _userManager.GetUserId(User);
+            Console.WriteLine($"user id: {userId}");
+            Console.WriteLine($"Movie id: {movie.UserId}");
+            if (movie.UserId != userId)
+            {
+                TempData["error"] = "You are not authorized to edit this movie";
+                return RedirectToAction("Index");
+            }
+
+
             if (ModelState.IsValid)
             {
                 _db.Movies.Update(movie); //updates the movie in the database
@@ -117,21 +177,29 @@ namespace Movie_Ranker.Controllers
         }
 
         //get method to delete a movie
+        [Authorize]
         public IActionResult Delete(int id)
         {
             if (id == null || id == 0)
             {
                 return NotFound();
             }
-            else
+            
+            var movie = _db.Movies.Find(id); //finds the movie with the id passed in the parameter
+            if (movie == null)
             {
-                var movie = _db.Movies.Find(id); //finds the movie with the id passed in the parameter
-                if (movie == null)
-                {
-                    return NotFound();
-                }
-                return View(movie);
+                return NotFound();
             }
+
+            //check if current user is the owner of the movie
+            var userId = _userManager.GetUserId(User);
+            if (movie.UserId != userId)
+            {
+                TempData["error"] = "You are not authorized to delete this movie. Sign in to your movies";
+                return RedirectToAction("Index");
+            }
+            return View(movie);
+           
         }
 
         [HttpPost]
@@ -143,6 +211,15 @@ namespace Movie_Ranker.Controllers
             {
                 return NotFound();
             }
+
+            //Check if the current user is the owner of the movie
+            var userId = _userManager.GetUserId(User);
+            if (movie.UserId != userId)
+            {
+                TempData["error"] = "You are not authorized to delete this movie. Sign in to your movies";
+                return RedirectToAction("Index");
+            }
+
             _db.Movies.Remove(movie); //removes the movie from the database
             _db.SaveChanges(); //saves the changes to the database
 
