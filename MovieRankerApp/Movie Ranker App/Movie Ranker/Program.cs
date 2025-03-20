@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Movie_Ranker.Data;
+using Movie_Ranker.Services;
 
 var builder = WebApplication.CreateBuilder(); // Pass the options here
 Console.WriteLine($"Content Root Path: {builder.Environment.ContentRootPath}");
@@ -26,6 +27,9 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>() //IdentityUser and Id
     .AddDefaultTokenProviders(); //adds token providers to generate tokens for password reset, email confirmation etc
 
 var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
+
+//Add email service to the application
+builder.Services.AddTransient<EmailService>();
 
 if (string.IsNullOrEmpty(connectionString))
 {
