@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Movie_Ranker.Data;
 using Movie_Ranker.Models;
+using Movie_Ranker.Services;
 
 namespace Movie_Ranker.Controllers
 {
@@ -12,19 +13,21 @@ namespace Movie_Ranker.Controllers
         //this is used to store the database context instance
         private readonly ApplicationDbContext _db;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly EmailService _emailService;
 
         //MovieController is a constructor that takes ApplicationDbContext as a parameter and assigns it to the private field _db
         //constructior receives ApplicatioDbContext via Dependency Injection (DI)
-        public MovieController(ApplicationDbContext db, UserManager<IdentityUser> userManager)
+        public MovieController(ApplicationDbContext db, UserManager<IdentityUser> userManager, EmailService emailService)
         {
             _db = db;   //assigns the injeced db instance to the private field _db so it can be used through out the controller
             _userManager = userManager; //Injecting UserManager to get the current user's ID
+            _emailService = emailService;   //Injecting EmailService to send emails
         }
 
         public IActionResult Index(string searchString = "") //search string is optional here
         {
             if (!string.IsNullOrEmpty(searchString))
-            { 
+            {
                 //trim the search string to remove leading or trailing spaces
                 searchString = searchString.Trim();
 
@@ -47,7 +50,7 @@ namespace Movie_Ranker.Controllers
             }
 
             IEnumerable<MovieModel> objMovieList = _db.Movies.ToList(); //retrieves all the movies from the database and stores them in objMovieList
-            
+
             //If user is logged in 
             if (User.Identity.IsAuthenticated)
             {
@@ -105,7 +108,7 @@ namespace Movie_Ranker.Controllers
                 return RedirectToAction("Index"); //redirects to the Index action
             }
             //ensure the model passed back contains all properties
-        
+
             return View(new MovieModel
             {
                 MovieName = movie.MovieName,
@@ -125,7 +128,7 @@ namespace Movie_Ranker.Controllers
             {
                 return NotFound();
             }
-            
+
             var movie = _db.Movies.Find(id); //finds the movie with the id passed in the parameter
             if (movie == null)
             {
@@ -184,7 +187,7 @@ namespace Movie_Ranker.Controllers
             {
                 return NotFound();
             }
-            
+
             var movie = _db.Movies.Find(id); //finds the movie with the id passed in the parameter
             if (movie == null)
             {
@@ -199,7 +202,7 @@ namespace Movie_Ranker.Controllers
                 return RedirectToAction("Index");
             }
             return View(movie);
-           
+
         }
 
         [HttpPost]
@@ -225,6 +228,54 @@ namespace Movie_Ranker.Controllers
 
             TempData["success"] = "Movie has been deleted successfully";
             return RedirectToAction("Index"); //redirects to the Index action
+        }
+
+        [Authorize]
+        public async Task<IActionResult> ShareViaEmail(string email)
+        {
+            var userId = _userManager.GetUserId(User);
+            var movies = _db.Movies.Where(m => m.UserId == userId).ToList();
+
+            if (movies.Count == 0)
+            {
+                TempData["error"] = "You have no movies to share";
+                return RedirectToAction("Index");
+            }
+
+            //Generate HTML content for the email
+            var tableRows = string.Join("\n", movies.Select(movie => $@"
+                <tr>
+                    <td>{movie.MovieName}</td>
+                    <td>{movie.Genre}</td>
+                    <td>{movie.ReleaseDate}</td>
+                    <td>{movie.Studio}</td>
+                    <td>{movie.Score}</td>
+                </tr>"));
+
+            var htmlContent = $@"
+                <h1>My Movie List</h1>
+                <p>Here's my list of favourite movies:</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Movie Name</th>
+                            <th>Genre</th>  
+                            <th>Release Year</th>
+                            <th>Studio</th> 
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {tableRows}
+                    </tbody>
+                </table>
+            ";
+
+            //Send the email
+            await _emailService.SendEmailAsync(email, "My Movie List", htmlContent);
+
+            TempData["success"] = "Movies shared successfully";
+            return RedirectToAction("Index");
         }
     }
 }
