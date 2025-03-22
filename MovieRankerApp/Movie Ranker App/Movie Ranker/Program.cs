@@ -58,5 +58,5 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 //Use the PORT environment variable provided by Render
-var port = Environment.GetEnvironmentVariable("PORT") ?? "7174";
-app.Run($"https://0.0.0.0:{port}");
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5209";
+app.Run($"http://0.0.0.0:{port}");
