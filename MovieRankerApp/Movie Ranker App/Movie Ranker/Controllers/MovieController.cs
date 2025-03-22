@@ -230,8 +230,18 @@ namespace Movie_Ranker.Controllers
             return RedirectToAction("Index"); //redirects to the Index action
         }
 
+
+
+        [HttpGet]
         [Authorize]
-        public async Task<IActionResult> ShareViaEmail(string email)
+        public IActionResult ShareViaEmail()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> ShareViaEmail(ShareViaEmailModel model)
         {
             var userId = _userManager.GetUserId(User);
             var movies = _db.Movies.Where(m => m.UserId == userId).ToList();
@@ -247,8 +257,7 @@ namespace Movie_Ranker.Controllers
                 <tr>
                     <td>{movie.MovieName}</td>
                     <td>{movie.Genre}</td>
-                    <td>{movie.ReleaseDate}</td>
-                    <td>{movie.Studio}</td>
+                    <td>{movie.ReleaseDate.Year}</td>
                     <td>{movie.Score}</td>
                 </tr>"));
 
@@ -272,7 +281,7 @@ namespace Movie_Ranker.Controllers
             ";
 
             //Send the email
-            await _emailService.SendEmailAsync(email, "My Movie List", htmlContent);
+            await _emailService.SendEmailAsync(model.EmailToSend, "My Movies List", htmlContent);
 
             TempData["success"] = "Movies shared successfully";
             return RedirectToAction("Index");
