@@ -19,5 +19,31 @@
         <a asp-controller="Movie" asp-action="Index" class="btn btn-secondary" style="width:150px">
             Back to List
         </a>
+
+        <!--Preview Container-->
+        <div id="emailPreview" class="mt-4 p-3 border">
+            <h4>Email Preview</h4>
+            <div id="previewContent">Loading preview...</div>
+        </div>
     </div>
 </form>
+
+@section Scripts{
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const previewContent = document.getElementById("previewContent");
+
+            fetch('@Url.Action("GetEmailPreview", "Movie")')
+                .then(response => {
+                    if (!response.ok) throw new Error('Network error');
+                    return response.text();
+                })
+                .then(html => {
+                    previewContent.innerHTML = html;
+                })
+                .catch(Error => {
+                    previewContent.innerHTML = "Error loading preview: ${error.message}";
+                });
+        });
+    </script>
+}
