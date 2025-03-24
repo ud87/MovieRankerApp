@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Movie_Ranker.Data;
 using Movie_Ranker.Models;
 using Movie_Ranker.Services;
+using System.Linq;
 
 namespace Movie_Ranker.Controllers
 {
@@ -244,7 +245,7 @@ namespace Movie_Ranker.Controllers
         public async Task<IActionResult> ShareViaEmail(ShareViaEmailModel model)
         {
             var userId = _userManager.GetUserId(User);
-            var movies = _db.Movies.Where(m => m.UserId == userId).ToList();
+            var movies = _db.Movies.Where(m => m.UserId == userId).ToList(); //get list by userId
 
             if (movies.Count == 0)
             {
@@ -252,29 +253,30 @@ namespace Movie_Ranker.Controllers
                 return RedirectToAction("Index");
             }
 
-            //Generate HTML content for the email
-            var tableRows = string.Join("\n", movies.Select(movie => $@"
-                <tr>
-                    <td>{movie.MovieName}</td>
-                    <td>{movie.Genre}</td>
-                    <td>{movie.ReleaseDate.Year}</td>
-                    <td>{movie.Score}</td>
+            var sortedMovies = movies.OrderByDescending(movie => movie.Score).ToList(); //order by score
+
+            //Generate HTML content for the email preview
+            var tableRows = string.Join("\n", sortedMovies.Select(movie => $@"
+                <tr style='border-bottom: 1px solid black; style= padding:1rem;'>
+                    <td style='padding:1rem;'>{movie.MovieName}</td>
+                    <td style='padding:1rem;'>{movie.Genre}</td>
+                    <td style='text-align:center; style=padding:1rem;'>{movie.ReleaseDate.Year}</td>
+                    <td style='text-align:center; style=padding:1rem;'>{movie.Score}</td>
                 </tr>"));
 
             var htmlContent = $@"
-                <h1>My Movie List</h1>
-                <p>Here's my list of favourite movies:</p>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Movie Name</th>
-                            <th>Genre</th>  
-                            <th>Release Year</th>
-                            <th>Studio</th> 
-                            <th>Score</th>
+                <h2 style='text-align: center'>My Movie List</h2>
+                <p style='text-align: center'>Here's my list of favourite movies:</p>
+                <table style='border-collapse: collapse; margin: 25px auto; font-size: 0.9em; font-family: sans-serif; min-width: 400px; box-shadow: 0 0 20px rgba(0, 0 , 0, 0.15);'>
+                    <thead style='padding:1rem;'>
+                        <tr style='background-color: #009879; color:#ffffff; text-align: left; style=padding:1rem;'>
+                            <th style='padding:1rem;'>Movie Name</th>
+                            <th style='padding:1rem;'>Genre</th>  
+                            <th style='padding:1rem;'>Release Year</th>
+                            <th style='padding:1rem;'>Score</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody style:'padding: 4rem;'>
                         {tableRows}
                     </tbody>
                 </table>
@@ -285,6 +287,52 @@ namespace Movie_Ranker.Controllers
 
             TempData["success"] = "Movies shared successfully";
             return RedirectToAction("Index");
+
         }
+
+        [HttpGet]
+        [Authorize]
+        public IActionResult GetEmailPreview()
+        {
+            var userId = _userManager.GetUserId(User);
+            var movies = _db.Movies.Where(m => m.UserId == userId).ToList();
+
+            if (movies.Count == 0)
+            {
+                return Content("<p>You have no movies to share</p>");
+            }
+
+            var sortedMovies = movies.OrderByDescending(movie => movie.Score).ToList();
+
+            //Generate HTML content for the email preview
+            var tableRows = string.Join("\n", sortedMovies.Select(movie => $@"
+                <tr style='border-bottom: 1px solid black; style= padding:1rem;'>
+                    <td style='padding:1rem;'>{movie.MovieName}</td>
+                    <td style='padding:1rem;'>{movie.Genre}</td>
+                    <td style='text-align:center; style=padding:1rem;'>{movie.ReleaseDate.Year}</td>
+                    <td style='text-align:center; style=padding:1rem;'>{movie.Score}</td>
+                </tr>"));
+
+            var htmlContent = $@"
+                <h2 style='text-align: center'>My Movie List</h2>
+                <p style='text-align: center'>Here's my list of favourite movies:</p>
+                <table style='border-collapse: collapse; margin: 25px auto; font-size: 0.9em; font-family: sans-serif; min-width: 400px; box-shadow: 0 0 20px rgba(0, 0 , 0, 0.15);'>
+                    <thead style='padding:1rem;'>
+                        <tr style='background-color: #009879; color:#ffffff; text-align: left; style=padding:1rem;'>
+                            <th style='padding:1rem;'>Movie Name</th>
+                            <th style='padding:1rem;'>Genre</th>  
+                            <th style='padding:1rem;'>Release Year</th>
+                            <th style='padding:1rem;'>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody style:'padding: 4rem;'>
+                        {tableRows}
+                    </tbody>
+                </table>
+            ";
+
+            return Content(htmlContent, "text/html");
+        }
+
     }
 }
