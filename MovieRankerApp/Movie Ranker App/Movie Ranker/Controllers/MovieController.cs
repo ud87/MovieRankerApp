@@ -334,5 +334,43 @@ namespace Movie_Ranker.Controllers
             return Content(htmlContent, "text/html");
         }
 
+
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(ShareViaEmailModel model)
+        {
+            //checks if email address is valid
+            if (!ModelState.IsValid)
+            {
+                TempData["error"] = "Invalid email address";
+                return View(model);
+            }
+
+            //check if email exists in the database
+            var user = await _userManager.FindByEmailAsync(model.EmailToSend);
+            //Console.WriteLine(user != null ? "User found" : "User not found");
+            
+            if (user == null)
+            {
+                TempData["error"] = "Email does not exist";
+                //clear input field
+                return RedirectToAction("ForgotPassword");
+            }
+
+            //generate password reset token
+            decimal token = new Random().Next(100000, 999999);
+
+            //send password reset email
+            await _emailService.SendEmailAsync(model.EmailToSend, "Password Reset", $"Your password reset token is: {token}");
+
+            TempData["success"] = "Password reset token sent successfully";
+
+            return RedirectToAction("Index");
+        }
     }
 }

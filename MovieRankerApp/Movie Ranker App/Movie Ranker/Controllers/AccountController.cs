@@ -29,7 +29,7 @@ namespace Movie_Ranker.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 //create new user
                 var user = new IdentityUser
@@ -49,7 +49,7 @@ namespace Movie_Ranker.Controllers
                 }
 
                 //will show error if there is sign in error 
-                foreach(var error in result.Errors)
+                foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError("", error.Description);
                 }
@@ -90,5 +90,7 @@ namespace Movie_Ranker.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
+
+
     }
 }
