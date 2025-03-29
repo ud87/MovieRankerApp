@@ -45,6 +45,7 @@ namespace Movie_Ranker.Controllers
                 {
                     //logs user immediately after successful registration
                     await _signInManager.SignInAsync(user, isPersistent: false); //isPersistent:false for session cookie only lasts on window
+                    TempData["success"] = "Sucessfully registered";
                     return RedirectToAction("index", "home");
                 }
 
@@ -59,12 +60,15 @@ namespace Movie_Ranker.Controllers
 
         //Show login form
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Login()
         {
             return View();
         }
 
         [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
@@ -73,6 +77,7 @@ namespace Movie_Ranker.Controllers
 
                 if (result.Succeeded)
                 {
+                    TempData["success"] = "Sucessfully signed in";
                     return RedirectToAction("Index", "Movie");
                 }
                 else
@@ -85,9 +90,11 @@ namespace Movie_Ranker.Controllers
 
         [HttpPost]
         [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> LogOut()
         {
             await _signInManager.SignOutAsync();
+            TempData["success"] = "Signed out";
             return RedirectToAction("Index", "Home");
         }
 
