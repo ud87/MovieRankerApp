@@ -9,17 +9,18 @@ This app is deployed at
 
 ## Features
 
-- **Create Movie**: Users can add new movies with details like name, genre, release date, and studio.
-- **Score and Rate Movies**: Users can rate movies on a scale of 0 to 10.
+- **Create Movie**: Users can add new movies with details like name, genre, release date, and studio. This can only be done once logged in. Each users will have their own lists. 
+- **Score and Rate Movies**: Users can rate movies on a scale of 0 to 10. This can only be done once logged in. Each users will have their own lists.
 - **View Rankings**: Users can view a list of movies sorted by their ratings.
 - **User Authentication**: Users can create accounts and log in to manage their movie rankings.
+- **Reset User Password**: Users can reset their password if password is forgotten. 
 - **Email list**: Users can share their movie list with their friends via email
 
 ---
 
 ## Technologies Used
 
-- **Frontend**: ASP.NET Core MVC, Razor Pages, bootstrap, bootswatch theme
+- **Frontend**: ASP.NET Core MVC, Razor Pages, bootstrap, bootswatch theme, toastr.js (for notifications)
 - **Backend**: ASP.NET Core MVC, Entity Framework Core, Email SMTP
 - **Database**: Supabase PostgreSQL
 - **Authentication**: ASP.NET Core Identity
