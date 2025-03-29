@@ -456,10 +456,6 @@ namespace Movie_Ranker.Controllers
 
         }
 
-        [HttpGet]
-        public IActionResult ResetPasswordConfirmation()
-        {
-            return View();
-        }
+        
     }
 }
