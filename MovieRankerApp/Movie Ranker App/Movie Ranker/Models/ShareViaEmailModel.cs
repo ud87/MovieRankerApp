@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
+//this model is used for resetting new password for existing accounts
 namespace Movie_Ranker.Models
 {
     public class ShareViaEmailModel
