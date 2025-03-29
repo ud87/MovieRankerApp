@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Movie_Ranker.Data;
 using Movie_Ranker.Models;
 using Movie_Ranker.Services;
 using System.Linq;
+using System.Text;
 
 namespace Movie_Ranker.Controllers
 {
@@ -43,7 +45,7 @@ namespace Movie_Ranker.Controllers
 
                 if (!objFilteredMovieList.Any())
                 {
-                    TempData["error"] = "No categories found. Press search again to go back";
+                    TempData["error"] = "No movies found. Press search again to go back";
                 }
 
                 //pass it to the view
@@ -247,6 +249,12 @@ namespace Movie_Ranker.Controllers
             var userId = _userManager.GetUserId(User);
             var movies = _db.Movies.Where(m => m.UserId == userId).ToList(); //get list by userId
 
+            //Client side validation check
+            if (!ModelState.IsValid)
+            {
+                return View(model);  //returns the view with validation messages
+            }
+
             if (movies.Count == 0)
             {
                 TempData["error"] = "You have no movies to share";
@@ -354,23 +362,104 @@ namespace Movie_Ranker.Controllers
             //check if email exists in the database
             var user = await _userManager.FindByEmailAsync(model.EmailToSend);
             //Console.WriteLine(user != null ? "User found" : "User not found");
-            
+
             if (user == null)
             {
-                TempData["error"] = "Email does not exist";
+                TempData["success"] = "If an account exists with this email, a reset link has been sent";
                 //clear input field
                 return RedirectToAction("ForgotPassword");
             }
 
             //generate password reset token
-            decimal token = new Random().Next(100000, 999999);
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
-            //send password reset email
-            await _emailService.SendEmailAsync(model.EmailToSend, "Password Reset", $"Your password reset token is: {token}");
+            //Environment-aware URL generation
+            string callBackUrl;
 
-            TempData["success"] = "Password reset token sent successfully";
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+            {
+                //Hardcoded for development
+                callBackUrl = $"http://localhost:5209/Movie/ResetPassword?email={Uri.EscapeDataString(model.EmailToSend)}&token={encodedToken}";
+            }
+            else
+            {
+                //Dynamic for production
+                callBackUrl = Url.Action(
+                    "ResetPassword", 
+                    "Movie",
+                    new
+                    {
+                        email = model.EmailToSend,
+                        token = encodedToken
+                    },
+                    protocol: Request.Scheme);
+            }
 
-            return RedirectToAction("Index");
+            //For testing
+            Console.WriteLine($"Reset link: {callBackUrl}");
+
+            
+
+            //send email with link
+            await _emailService.SendEmailAsync(model.EmailToSend, "Reset Password",
+                $"Please reset your password by clicking here: <a href='{callBackUrl}'>link</a>");
+
+            TempData["success"] = "If an account exists with this email, a reset link has been sent";
+
+            return RedirectToAction("ForgotPassword");
+        }
+
+        [HttpGet]
+        public IActionResult ResetPassword(string email, string token)
+        {
+            if (email == null || token == null)
+            {
+                ModelState.AddModelError("", "Invalid password reset token");
+            }
+            return View();
+        } 
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            //Get user by email
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return RedirectToAction("ResetPasswordConfirmation");
+            }
+
+            //Decode the token
+            var decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(model.Token));
+
+            //Reset the password
+            var result = await _userManager.ResetPasswordAsync(user, decodedToken, model.NewPassword);
+            //Console.WriteLine($"Result is {result}");
+            if (result.Succeeded)
+            {
+                //Send confirmation email
+                await _emailService.SendEmailAsync(model.Email, "Password Changed", "<p>Your password has been changed successfully.</p>");
+                return RedirectToAction("Login", "Account");  //go to Account controller and login view
+            }
+             
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+            return View(model);
+
+        }
+
+        [HttpGet]
+        public IActionResult ResetPasswordConfirmation()
+        {
+            return View();
         }
     }
 }
